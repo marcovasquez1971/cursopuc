@@ -1,0 +1,33 @@
+// SPDX-License-Identifier: NONE
+// exercicio de aula com base no contrato criado por Claudio Girao Barreto
+
+pragma solidity 0.8.4;
+
+contract ConsultaSubsecaoMunicipio {
+    
+    mapping (string => string) public competencias;
+    mapping (uint => string) public regioes;
+    string [] public leis;
+    
+    constructor () {
+        regioes [1] = "DF";
+        regioes [2] = "RJ e ES";
+        regioes [3] = "SP e MS";
+        regioes [4] = "PR, SC e RS";
+        regioes [5] = "PE, AL, PB, RN, CE";
+        leis.push ("lei de vargas");
+        leis.push ("Marco Civil da Internet");
+        
+    }
+    function incluirLei(string memory _nomeDaLei) public {
+        leis.push (_nomeDaLei);
+    }
+    function consultarNomeDaLei(uint _NumeroDaLei) public view returns (string memory) {
+        return leis [_NumeroDaLei];
+    }
+    
+    function consultarSubsecaoMunicipio(string memory _municipio) public view returns (string memory) {
+        return competencias[_municipio];
+    }
+
+}
