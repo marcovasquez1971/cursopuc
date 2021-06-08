@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: CC-BY 4.0
+// by Marco Antonio Vasquez Rodriguez (copyright)
+
+pragma solidity 0.8.4;
+
+contract certificadoLaudo {
+    
+    struct ImportacaoCertificada {
+        string nomeImportador;
+        address payable contaExportador;
+        address payable contaCertificadora;
+        uint valorImportacao;
+        bool resultado;
+    }
+    
+    address payable public contaExportador;
+    address payable public contaCertificadora;
+    uint public certificacao;
+    uint public percentualCertificadora = 10;
+    
+    mapping(address => ImportacaoCertificada) public listaCertificados;
+    ImportacaoCertificada[] public certificados;
+
+    bool public resultado;
+    
+    event novoCertificado(string Positivo);
+    
+    modifier certificadosEmitidos {
+        require (msg.sender == contaExportador, "Somente exportador pode consultar");
+        _;
+        
+    }
+    
+    constructor(
+        uint256,
+        address payable _contaExportador,
+        address payable _contaCertificadora
+    ) {
+        contaExportador = _contaExportador;
+        contaCertificadora = _contaCertificadora;
+    }
+    
+    event BillofLanding (address carteira, uint importacao);
+    
+    
+    function encerrarLaudo() public ImportacaoCertificada {
+       
+        require(block.timestamp >= publicacaoLaudo);
+       
+        emit encerrarLaudo (carteiraExportador, valorImportacao);
+
+        contaExportador.transfer(address(this).balance);
+    }
+    
+}
