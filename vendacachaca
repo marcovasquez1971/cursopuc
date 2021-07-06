@@ -8,56 +8,47 @@ pragma solidity 0.8.4;
 
     contract CachacaPremium {
     
-    address public Produtor;
+    address public Produtor; //utilizamos produtor ao inves de owner
 
     constructor() {
         Produtor = msg.sender;
+
     }
     
     struct Produto {
         string marca;
         string madeira;
         uint envelhecimento;
-        uint valor;
-        uint estoque;
-    }
-    
-    Produto[] public serie;
-    mapping(string => Produto) public classificacao;
-    
-    function inserirProduto(string memory nomeMarca, string memory nomeMadeira, uint anosEnvelhecimento, uint preco, uint quantidadeEstoque) public {
-        Produto memory novoProduto = Produto(nomeMarca, nomeMadeira, anosEnvelhecimento, preco, quantidadeEstoque);
-        
-        serie.push(novoProduto);
-        classificacao[nomeMarca] = novoProduto;
-    }
-    
-    function obterMarca(uint lote) public view returns (string memory) {
-        return serie[lote].marca;
-    }
-    //// ate aqui foi bem
-    
-     struct Venda {
-        string comprador;
-        string produto;
-        string enderecoEntrega;
         uint preco;
     }
-
-    Venda[] public vendas;
-
+    
+    struct Venda {
+        string comprador;
+        string enderecoEntrega;
+        string marca;
+        address payable carteiraComprador;
+        uint quantidade;
+        uint preco;
+        uint numeroPedido;
+    }
+    
+    Produto[] public ranking;
+    mapping(string => Produto) public cachaca;
+    
+    function inserirProduto(
+        string memory nomeMarca, 
+        string memory nomeMadeira, 
+        uint anosEnvelhecimento, 
+        uint preco) external returns (bool) {
+        require(msg.sender == Produtor,"somente o produtor pode inserir produto");
+        Produto memory novoProduto = Produto(nomeMarca, nomeMadeira, anosEnvelhecimento, preco);
+        ranking.push(novoProduto);
+        cachaca[nomeMarca] = novoProduto;
+        return true;
     }
 
-    function registrarVenda(
-        string memory nomeComprador,
-        string memory produto,
-        string memory enderecoEntrega,
-        uint preco
-    ) external returns (bool) {
-        require(msg.sender == Produtor, "Somente Produtor pode registrar venda");
-        Venda memory novaVenda = Venda(nomeComprador, produto, enderecoEntrega, preco);
-        vendas.push(novaVenda);
-        return true;
+    function obterMarca(uint marca) public view returns (string memory) {
+        return ranking[marca].marca;
     }
     
 }
