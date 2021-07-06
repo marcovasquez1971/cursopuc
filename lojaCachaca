@@ -1,0 +1,66 @@
+/*
+SPDX-License-Identifier: CC-BY-4.0
+(c) Desenvolvido por Marco Antonio Vasquez Rodriguez
+Trabalho de conclusao de curso PUC
+*/
+
+pragma solidity 0.8.4;
+
+contract LojaCachaca {
+
+    address payable public vendedor;
+
+    struct Produto {
+        uint codLote;
+        string marca;
+        uint preco;
+        uint8 quantidade;
+    }
+
+    struct Venda {
+        uint codProduto;
+        uint timestamp;
+        address comprador;
+        
+    }
+
+    mapping (uint => Produto) produtos;
+    mapping (bytes32 => Venda) public vendas;
+    uint valoresVendas;
+
+    constructor() {
+        vendedor = payable (msg.sender);
+        valoresVendas = 0;
+    }
+
+    function inserirProdutos(uint lote, string memory marca, uint preco, uint8 quantidade) public returns(bool) {
+        require(msg.sender == vendedor,"Nao tem permissao para incluir produtos!");
+        produtos[lote] = (Produto(lote, marca, preco, quantidade));
+        return true;
+    }
+
+    function comprarProduto(uint lote, uint8 quantidade) public payable returns(bytes32) {
+      
+      if(quantidade > produtos[lote].quantidade){
+          revert("Quantidade indisponivel!");
+     }
+        require(produtos[lote].preco * quantidade == msg.value, "O valor informado nao confere");
+        valoresVendas +=  msg.value;
+        produtos[lote].quantidade -= quantidade;
+        bytes32 ven = keccak256(abi.encodePacked(msg.sender, lote, block.timestamp, quantidade));
+        vendas[ven] = (Venda(lote, block.timestamp, msg.sender));
+        return ven;
+    }
+    
+    function obterNameProduto(uint codBar) public view returns(string memory) {
+        return produtos[codBar].marca;
+    }
+    
+    function transferirFundos() public {
+        require(msg.sender == vendedor, "Nao tem permissao para sacar!");
+        vendedor.transfer(valoresVendas);
+        valoresVendas = 0;
+        
+    }
+   
+}
